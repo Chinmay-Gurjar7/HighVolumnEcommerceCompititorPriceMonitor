@@ -1,0 +1,46 @@
+project:
+  name: "ecommerce-price-intelligence"
+  version: "1.0.0"
+  environment: "development"
+
+data_source:
+  name: "kaggle_ecommerce_pricing"
+  type: "csv"
+  input_file: "data/input/ecommerce_pricing.csv"
+
+artifacts:
+  root_dir: "artifacts"
+
+  raw_dir: "artifacts/raw"
+  processed_dir: "artifacts/processed"
+  failed_dir: "artifacts/failed"
+  reports_dir: "artifacts/reports"
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "ecommerce_price_monitor"
+  username: "${POSTGRES_USER}"
+  password: "${POSTGRES_PASSWORD}"
+
+pipeline:
+  batch_size: 1000
+  enable_validation: true
+  enable_logging: true
+
+validation:
+  required_columns:
+    - "id"
+    - "title"
+    - "prices.amount"
+    - "prices.dateSeen"
+    - "prices.merchant"
+
+  allow_duplicates: false
+  allow_null_prices: false
+  minimum_price: 0
+
+logging:
+  log_dir: "logs"
+  log_file: "pipeline.log"
+  level: "INFO"
