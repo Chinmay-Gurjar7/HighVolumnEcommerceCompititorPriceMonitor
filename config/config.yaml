@@ -31,10 +31,19 @@ pipeline:
 validation:
   required_columns:
     - "id"
-    - "title"
-    - "prices.amount"
+    - "name"
+    - "brand"
+    - "categories"
+    - "prices.amountMin"
+    - "prices.amountMax"
+    - "prices.currency"
     - "prices.dateSeen"
     - "prices.merchant"
+    - "prices.condition"
+
+  allow_duplicates: false
+  allow_null_prices: false
+  minimum_price: 0
 
   allow_duplicates: false
   allow_null_prices: false
