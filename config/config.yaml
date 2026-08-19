@@ -41,11 +41,7 @@ validation:
     - "prices.merchant"
     - "prices.condition"
 
-  allow_duplicates: false
-  allow_null_prices: false
-  minimum_price: 0
-
-  allow_duplicates: false
+  allow_duplicates: true
   allow_null_prices: false
   minimum_price: 0
 
