@@ -4,6 +4,7 @@ from utils.config_manager import ConfigurationManager
 from components.data_ingestion import DataIngestion
 from components.data_validation import DataValidation
 from components.data_transformation import DataTransformation
+from components.data_loading import DataLoading
 
 
 logger = get_logger(__name__)
@@ -14,7 +15,7 @@ def run_pipeline():
         logger.info("========== PIPELINE STARTED ==========")
 
         # ==================================================
-        # 1. Load Configuration
+        # 1. LOAD CONFIGURATION
         # ==================================================
 
         config_manager = ConfigurationManager()
@@ -29,6 +30,10 @@ def run_pipeline():
 
         validation_config = (
             config_manager.get_validation_config()
+        )
+
+        database_config = (
+            config_manager.get_database_config()
         )
 
         # ==================================================
@@ -47,7 +52,7 @@ def run_pipeline():
         )
 
         logger.info(
-            f"Data ingestion completed successfully: "
+            f"Data ingestion completed: "
             f"{raw_file_path}"
         )
 
@@ -88,27 +93,44 @@ def run_pipeline():
         )
 
         processed_file_path = (
-            data_transformation.initiate_data_transformation(
+            data_transformation
+            .initiate_data_transformation(
                 raw_file_path=raw_file_path
             )
         )
 
         logger.info(
-            f"Data transformation completed successfully: "
+            f"Data transformation completed: "
             f"{processed_file_path}"
         )
 
         # ==================================================
-        # 5. PIPELINE COMPLETED
+        # 5. DATA LOADING
+        # ==================================================
+
+        logger.info("Starting data loading...")
+
+        data_loading = DataLoading(
+            database_config=database_config
+        )
+
+        records_loaded = (
+            data_loading.initiate_data_loading(
+                processed_file_path=processed_file_path
+            )
+        )
+
+        logger.info(
+            f"Data loading completed successfully. "
+            f"Records loaded: {records_loaded}"
+        )
+
+        # ==================================================
+        # 6. PIPELINE COMPLETED
         # ==================================================
 
         logger.info(
             "========== PIPELINE COMPLETED SUCCESSFULLY =========="
-        )
-
-        logger.info(
-            f"Final processed dataset: "
-            f"{processed_file_path}"
         )
 
     except Exception as error:
