@@ -728,6 +728,17 @@ class DataLoading:
                 :observed_year,
                 :observed_month
             )
+            ON CONFLICT (
+                product_id,
+                merchant_id,
+                observed_at,
+                price,
+                price_min,
+                price_max,
+                currency,
+                condition
+            )
+            DO NOTHING
             """
         )
 
