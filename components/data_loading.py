@@ -819,20 +819,42 @@ class DataLoading:
                     )
 
         # ------------------------------------------------------
-        # Bulk insert
+        # Idempotent bulk insert
         # ------------------------------------------------------
 
-        connection.execute(
-            price_query,
-            price_records
+        records_received = len(price_records)
+
+        records_inserted = 0
+        records_skipped = 0
+
+        for record in price_records:
+
+            result = connection.execute(
+                price_query,
+                record
+            )
+
+            if result.rowcount == 1:
+                records_inserted += 1
+            else:
+                records_skipped += 1
+
+        logger.info(
+            f"Price history received: "
+            f"{records_received}"
         )
 
         logger.info(
-            f"Price history loaded successfully: "
-            f"{len(price_records)}"
+            f"New price history records inserted: "
+            f"{records_inserted}"
         )
 
-        return len(price_records)
+        logger.info(
+            f"Existing records skipped: "
+            f"{records_skipped}"
+        )
+
+        return records_inserted
 
     # ==========================================================
     # MAIN DATA LOADING METHOD
