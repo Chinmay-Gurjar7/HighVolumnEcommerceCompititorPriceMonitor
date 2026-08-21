@@ -239,10 +239,31 @@ class DataTransformation:
             # 10. Parse observation date
             # ==================================================
 
+            # Split multi-valued observation dates into individual dates
+            df["date_seen"] = (
+                df["date_seen"]
+                .astype("string")
+                .str.split(",")
+            )
+
+            # Create one row per observation date
+            df = df.explode(
+                "date_seen",
+                ignore_index=True
+            )
+
+            # Clean whitespace around individual dates
+            df["date_seen"] = (
+                df["date_seen"]
+                .str.strip()
+            )
+
+            # Parse individual ISO-8601 timestamps
             df["date_seen"] = pd.to_datetime(
                 df["date_seen"],
                 errors="coerce",
-                utc=True
+                utc=True,
+                format="ISO8601"
             )
 
             invalid_date_count = int(
