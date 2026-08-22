@@ -739,6 +739,7 @@ class DataLoading:
                 condition
             )
             DO NOTHING
+            RETURNING price_id
             """
         )
 
@@ -827,14 +828,23 @@ class DataLoading:
         records_inserted = 0
         records_skipped = 0
 
-        for record in price_records:
+        for index, record in enumerate(price_records):
 
             result = connection.execute(
                 price_query,
                 record
             )
 
-            if result.rowcount == 1:
+            inserted_id = result.scalar()
+
+            if index < 3:
+                logger.info(
+                    f"INSERT TEST | rowcount={result.rowcount} | "
+                    f"product_id={record.get('product_id')} | "
+                    f"merchant_id={record.get('merchant_id')}"
+                )
+
+            if inserted_id is not None:
                 records_inserted += 1
             else:
                 records_skipped += 1
