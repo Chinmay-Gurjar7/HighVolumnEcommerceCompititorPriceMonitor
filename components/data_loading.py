@@ -438,6 +438,7 @@ class DataLoading:
             df[required_columns]
             .copy()
         )
+        # Just a comment
 
         # ------------------------------------------------------
         # Clean merchant
