@@ -104,4 +104,12 @@ class PipelineException(
     EcommercePriceMonitorException
 ):
     """Raised when the pipeline fails."""
-    pass
+    
+
+class DataAnalysisException(Exception):
+    """
+    Exception raised when data analysis fails.
+    """
+
+    def __init__(self, message: str):
+        super().__init__(message)
