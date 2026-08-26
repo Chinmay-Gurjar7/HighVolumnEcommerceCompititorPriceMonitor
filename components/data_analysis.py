@@ -722,6 +722,14 @@ class DataAnalysis:
     ) -> pd.DataFrame:
         """
         Calculates price-change frequency by merchant.
+
+        Metrics:
+        - total_observations: all price observations
+        - comparable_observations: observations with a previous price
+        - price_changes: observations where price changed
+        - price_increases: positive price changes
+        - price_decreases: negative price changes
+        - price_change_rate: price changes / comparable observations
         """
 
         try:
@@ -730,15 +738,11 @@ class DataAnalysis:
                 "Starting merchant price change frequency analysis..."
             )
 
-            price_changes = (
+            price_history = (
                 self.get_price_change_history()
             )
 
-            price_changes = price_changes.dropna(
-                subset=["previous_price"]
-            )
-
-            if price_changes.empty:
+            if price_history.empty:
 
                 logger.warning(
                     "No historical price records available "
@@ -747,20 +751,12 @@ class DataAnalysis:
 
                 return pd.DataFrame()
 
-            price_changes["is_price_change"] = (
-                price_changes["price_change"] != 0
-            )
+            # --------------------------------------------------
+            # TOTAL OBSERVATIONS
+            # --------------------------------------------------
 
-            price_changes["is_price_increase"] = (
-                price_changes["price_change"] > 0
-            )
-
-            price_changes["is_price_decrease"] = (
-                price_changes["price_change"] < 0
-            )
-
-            summary = (
-                price_changes
+            total_observations = (
+                price_history
                 .groupby(
                     [
                         "merchant_id",
@@ -770,6 +766,84 @@ class DataAnalysis:
                 )
                 .agg(
                     total_observations=(
+                        "price",
+                        "count"
+                    )
+                )
+            )
+
+            # --------------------------------------------------
+            # COMPARABLE OBSERVATIONS
+            # --------------------------------------------------
+
+            comparable_history = (
+                price_history
+                .dropna(
+                    subset=["previous_price"]
+                )
+                .copy()
+            )
+
+            if comparable_history.empty:
+
+                logger.warning(
+                    "No comparable price observations "
+                    "available for frequency analysis."
+                )
+
+                total_observations[
+                    "comparable_observations"
+                ] = 0
+
+                total_observations[
+                    "price_changes"
+                ] = 0
+
+                total_observations[
+                    "price_increases"
+                ] = 0
+
+                total_observations[
+                    "price_decreases"
+                ] = 0
+
+                total_observations[
+                    "price_change_rate"
+                ] = 0.0
+
+                return total_observations
+
+            # --------------------------------------------------
+            # PRICE CHANGE FLAGS
+            # --------------------------------------------------
+
+            comparable_history["is_price_change"] = (
+                comparable_history["price_change"] != 0
+            )
+
+            comparable_history["is_price_increase"] = (
+                comparable_history["price_change"] > 0
+            )
+
+            comparable_history["is_price_decrease"] = (
+                comparable_history["price_change"] < 0
+            )
+
+            # --------------------------------------------------
+            # AGGREGATE PRICE CHANGES
+            # --------------------------------------------------
+
+            change_summary = (
+                comparable_history
+                .groupby(
+                    [
+                        "merchant_id",
+                        "merchant_name",
+                    ],
+                    as_index=False
+                )
+                .agg(
+                    comparable_observations=(
                         "price",
                         "count"
                     ),
@@ -788,22 +862,62 @@ class DataAnalysis:
                 )
             )
 
+            # --------------------------------------------------
+            # COMBINE TOTAL + CHANGE METRICS
+            # --------------------------------------------------
+
+            summary = total_observations.merge(
+                change_summary,
+                on=[
+                    "merchant_id",
+                    "merchant_name",
+                ],
+                how="left"
+            )
+
+            numeric_columns = [
+                "comparable_observations",
+                "price_changes",
+                "price_increases",
+                "price_decreases",
+            ]
+
+            summary[numeric_columns] = (
+                summary[numeric_columns]
+                .fillna(0)
+                .astype(int)
+            )
+
+            # --------------------------------------------------
+            # PRICE CHANGE RATE
+            # --------------------------------------------------
+
             summary["price_change_rate"] = (
                 summary["price_changes"]
-                / summary["total_observations"]
-                * 100
+                .div(
+                    summary["comparable_observations"]
+                )
+                .mul(100)
             )
 
             summary["price_change_rate"] = (
                 summary["price_change_rate"]
+                .fillna(0)
                 .round(2)
             )
+
+            # --------------------------------------------------
+            # SORT
+            # --------------------------------------------------
 
             summary = (
                 summary
                 .sort_values(
-                    "price_change_rate",
-                    ascending=False
+                    [
+                        "price_changes",
+                        "price_change_rate",
+                    ],
+                    ascending=[False, False]
                 )
                 .reset_index(drop=True)
             )
