@@ -1,0 +1,504 @@
+{% extends "base.html" %}
+
+{% block title %}
+Products | Price Intelligence
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <span class="eyebrow">
+            PRODUCT EXPLORER
+        </span>
+
+        <h1>
+            Competitive Product Pricing
+        </h1>
+
+        <p>
+            Compare current competitor prices across the monitored product catalog.
+        </p>
+    </div>
+
+</div>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                CATALOG
+            </span>
+
+            <h2>
+                Products
+            </h2>
+        </div>
+
+        <span class="product-count">
+            {{ products|length }} products
+        </span>
+
+    </div>
+
+
+    <div class="product-toolbar">
+
+        <div class="search-wrapper">
+
+            <label for="product-search">
+                Search
+            </label>
+
+            <input
+                id="product-search"
+                type="search"
+                placeholder="Search product, brand, or ID..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="filter-wrapper">
+
+            <label for="brand-filter">
+                Brand
+            </label>
+
+            <select id="brand-filter">
+
+                <option value="">
+                    All brands
+                </option>
+
+                {% set brands = products
+                    |map(attribute="brand")
+                    |select
+                    |unique
+                    |sort
+                    |list
+                %}
+
+                {% for brand in brands %}
+
+                    <option value="{{ brand }}">
+                        {{ brand }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-wrapper">
+
+            <label for="sort-products">
+                Sort by
+            </label>
+
+            <select id="sort-products">
+
+                <option value="name">
+                    Product name
+                </option>
+
+                <option value="lowest">
+                    Lowest price
+                </option>
+
+                <option value="highest">
+                    Highest price
+                </option>
+
+                <option value="spread">
+                    Price spread
+                </option>
+
+                <option value="competitors">
+                    Competitor count
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table
+            class="data-table"
+            id="products-table"
+        >
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Brand
+                    </th>
+
+                    <th>
+                        Competitors
+                    </th>
+
+                    <th>
+                        Lowest
+                    </th>
+
+                    <th>
+                        Highest
+                    </th>
+
+                    <th>
+                        Average
+                    </th>
+
+                    <th>
+                        Spread
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="products-table-body">
+
+                {% for product in products %}
+
+                <tr
+                    class="product-row"
+                    data-product-name="{{ product.product_name|lower }}"
+                    data-brand="{{ product.brand|default('', true)|lower }}"
+                    data-product-id="{{ product.product_id|lower }}"
+                    data-lowest="{{ product.lowest_price }}"
+                    data-highest="{{ product.highest_price }}"
+                    data-average="{{ product.average_price }}"
+                    data-spread="{{ product.price_spread }}"
+                    data-competitors="{{ product.competitor_count }}"
+                >
+
+                    <td class="product-name-cell">
+
+                        <a
+                            href="{{ url_for(
+                                'product_detail',
+                                product_id=product.product_id
+                            ) }}"
+                            class="product-link"
+                        >
+                            {{ product.product_name }}
+                        </a>
+
+                        <span class="product-id">
+                            {{ product.product_id }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if product.brand %}
+
+                            <span class="brand-badge">
+                                {{ product.brand }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Unknown
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="competitor-count">
+                            {{ product.competitor_count }}
+                        </span>
+
+                    </td>
+
+
+                    <td class="price-cell">
+
+                        ${{ "%.2f"|format(product.lowest_price) }}
+
+                    </td>
+
+
+                    <td class="price-cell">
+
+                        ${{ "%.2f"|format(product.highest_price) }}
+
+                    </td>
+
+
+                    <td class="price-cell">
+
+                        ${{ "%.2f"|format(product.average_price) }}
+
+                    </td>
+
+
+                    <td class="spread-cell">
+
+                        ${{ "%.2f"|format(product.price_spread) }}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="empty-state"
+                    >
+                        No products available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        id="products-empty"
+        class="table-empty-message"
+        hidden
+    >
+        No products match the current filters.
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const searchInput =
+            document.getElementById("product-search");
+
+        const brandFilter =
+            document.getElementById("brand-filter");
+
+        const sortSelect =
+            document.getElementById("sort-products");
+
+        const tableBody =
+            document.getElementById("products-table-body");
+
+        const emptyMessage =
+            document.getElementById("products-empty");
+
+
+        function getRows() {
+
+            return Array.from(
+                tableBody.querySelectorAll(".product-row")
+            );
+
+        }
+
+
+        function filterProducts() {
+
+            const search =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+            const brand =
+                brandFilter.value
+                    .trim()
+                    .toLowerCase();
+
+
+            let visibleCount = 0;
+
+
+            getRows().forEach(
+                function (row) {
+
+                    const name =
+                        row.dataset.productName || "";
+
+                    const rowBrand =
+                        row.dataset.brand || "";
+
+                    const productId =
+                        row.dataset.productId || "";
+
+
+                    const matchesSearch =
+                        !search ||
+                        name.includes(search) ||
+                        rowBrand.includes(search) ||
+                        productId.includes(search);
+
+
+                    const matchesBrand =
+                        !brand ||
+                        rowBrand === brand;
+
+
+                    const visible =
+                        matchesSearch &&
+                        matchesBrand;
+
+
+                    row.hidden = !visible;
+
+
+                    if (visible) {
+                        visibleCount++;
+                    }
+
+                }
+            );
+
+
+            emptyMessage.hidden =
+                visibleCount !== 0;
+
+        }
+
+
+        function sortProducts() {
+
+            const sortBy =
+                sortSelect.value;
+
+
+            const rows =
+                getRows();
+
+
+            rows.sort(
+                function (a, b) {
+
+                    if (sortBy === "name") {
+
+                        return (
+                            a.dataset.productName
+                                .localeCompare(
+                                    b.dataset.productName
+                                )
+                        );
+
+                    }
+
+
+                    const aValue =
+                        parseFloat(
+                            a.dataset[
+                                sortBy === "lowest"
+                                    ? "lowest"
+                                    : sortBy === "highest"
+                                    ? "highest"
+                                    : sortBy === "spread"
+                                    ? "spread"
+                                    : "competitors"
+                            ]
+                        );
+
+
+                    const bValue =
+                        parseFloat(
+                            b.dataset[
+                                sortBy === "lowest"
+                                    ? "lowest"
+                                    : sortBy === "highest"
+                                    ? "highest"
+                                    : sortBy === "spread"
+                                    ? "spread"
+                                    : "competitors"
+                            ]
+                        );
+
+
+                    return bValue - aValue;
+
+                }
+            );
+
+
+            rows.forEach(
+                function (row) {
+
+                    tableBody.appendChild(row);
+
+                }
+            );
+
+        }
+
+
+        searchInput.addEventListener(
+            "input",
+            filterProducts
+        );
+
+
+        brandFilter.addEventListener(
+            "change",
+            filterProducts
+        );
+
+
+        sortSelect.addEventListener(
+            "change",
+            function () {
+
+                sortProducts();
+                filterProducts();
+
+            }
+        );
+
+
+        sortProducts();
+        filterProducts();
+
+    }
+);
+
+</script>
+
+{% endblock %}

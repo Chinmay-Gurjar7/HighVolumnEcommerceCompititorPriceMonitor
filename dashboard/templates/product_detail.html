@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ product.product_name }} | Price Intelligence
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <span class="eyebrow">
+            PRODUCT DETAIL
+        </span>
+
+        <h1>
+            {{ product.product_name }}
+        </h1>
+
+        <p>
+            {{ product.brand or "Unknown Brand" }}
+            {% if product.category %}
+                · {{ product.category }}
+            {% endif %}
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('products') }}"
+        class="panel-action"
+    >
+        ← Back to Products
+    </a>
+
+</div>
+
+
+<!-- PRODUCT SUMMARY -->
+
+<section class="kpi-grid">
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            COMPETITORS
+        </span>
+
+        <strong class="kpi-value">
+            {{ product.competitor_count }}
+        </strong>
+
+        <span class="kpi-description">
+            Merchants currently tracked
+        </span>
+
+    </div>
+
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            LOWEST PRICE
+        </span>
+
+        <strong class="kpi-value">
+            ${{ "%.2f"|format(product.lowest_price) }}
+        </strong>
+
+        <span class="kpi-description">
+            Best available competitor price
+        </span>
+
+    </div>
+
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            HIGHEST PRICE
+        </span>
+
+        <strong class="kpi-value">
+            ${{ "%.2f"|format(product.highest_price) }}
+        </strong>
+
+        <span class="kpi-description">
+            Highest competitor price
+        </span>
+
+    </div>
+
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            PRICE SPREAD
+        </span>
+
+        <strong class="kpi-value">
+            ${{ "%.2f"|format(product.price_spread) }}
+        </strong>
+
+        <span class="kpi-description">
+            Difference between highest and lowest
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- COMPETITOR PRICES -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                COMPETITIVE LANDSCAPE
+            </span>
+
+            <h2>
+                Current Competitor Prices
+            </h2>
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+                    <th>Merchant</th>
+                    <th>Price</th>
+                    <th>Currency</th>
+                    <th>Condition</th>
+                    <th>Observed</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for competitor in competitors %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ competitor.merchant_name }}
+                        </strong>
+                    </td>
+
+                    <td class="price-cell">
+                        ${{ "%.2f"|format(competitor.price) }}
+                    </td>
+
+                    <td>
+                        {{ competitor.currency }}
+                    </td>
+
+                    <td>
+                        {{ competitor.condition or "—" }}
+                    </td>
+
+                    <td>
+                        {{ competitor.observed_at }}
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="5">
+                        No competitor price data available.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- PRICE HISTORY -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                HISTORICAL ANALYSIS
+            </span>
+
+            <h2>
+                Price History
+            </h2>
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table class="data-table">
+
+            <thead>
+
+                <tr>
+                    <th>Merchant</th>
+                    <th>Observed</th>
+                    <th>Previous Price</th>
+                    <th>Current Price</th>
+                    <th>Change</th>
+                    <th>Change %</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for record in history %}
+
+                <tr>
+
+                    <td>
+                        {{ record.merchant_name }}
+                    </td>
+
+                    <td>
+                        {{ record.observed_at }}
+                    </td>
+
+                    <td>
+
+                        {% if record.previous_price is not none %}
+                            ${{ "%.2f"|format(record.previous_price) }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        ${{ "%.2f"|format(record.price) }}
+                    </td>
+
+                    <td>
+
+                        {% if record.price_change is not none %}
+
+                            {% if record.price_change > 0 %}
+
+                                <span class="price-increase">
+                                    +${{ "%.2f"|format(record.price_change) }}
+                                </span>
+
+                            {% elif record.price_change < 0 %}
+
+                                <span class="price-decrease">
+                                    -${{ "%.2f"|format(record.price_change|abs) }}
+                                </span>
+
+                            {% else %}
+
+                                <span>
+                                    $0.00
+                                </span>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if record.price_change_percentage is not none %}
+
+                            {% if record.price_change_percentage > 0 %}
+
+                                <span class="price-increase">
+                                    +{{ "%.2f"|format(record.price_change_percentage) }}%
+                                </span>
+
+                            {% elif record.price_change_percentage < 0 %}
+
+                                <span class="price-decrease">
+                                    {{ "%.2f"|format(record.price_change_percentage) }}%
+                                </span>
+
+                            {% else %}
+
+                                <span>
+                                    0.00%
+                                </span>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="6">
+                        No price history available.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endblock %}

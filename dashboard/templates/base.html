@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        Price Intelligence
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-mark">
+                    PI
+                </div>
+
+                <div class="brand-text">
+                    <h1>Price Intelligence</h1>
+                    <span>Analytics Platform</span>
+                </div>
+
+            </div>
+
+
+            <nav class="navigation">
+
+                <a
+                    href="{{ url_for('index') }}"
+                    class="nav-link"
+                >
+                    <span class="nav-symbol">⌂</span>
+                    Dashboard
+                </a>
+
+
+                <a
+                    href="{{ url_for('products') }}"
+                    class="nav-link"
+                >
+                    <span class="nav-symbol">▦</span>
+                    Products
+                </a>
+
+
+                <a
+                    href="{{ url_for('price_history') }}"
+                    class="nav-link"
+                >
+                    <span class="nav-symbol">↗</span>
+                    Price History
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="connection-status">
+
+                    <span class="status-indicator"></span>
+
+                    <div>
+                        <strong>System Online</strong>
+                        <small>PostgreSQL Connected</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Main application -->
+        <main class="main">
+
+            <header class="topbar">
+
+                <div>
+                    <span class="eyebrow">
+                        E-COMMERCE
+                    </span>
+
+                    <h2>
+                        Competitive Price Intelligence
+                    </h2>
+                </div>
+
+
+                <div class="environment">
+                    DEVELOPMENT
+                </div>
+
+            </header>
+
+
+            <div class="content">
+
+                {% block content %}
+                {% endblock %}
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='js/dashboard.js') }}"
+    ></script>
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+
+</html>

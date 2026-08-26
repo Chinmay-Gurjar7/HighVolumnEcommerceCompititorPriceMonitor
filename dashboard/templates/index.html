@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | Price Intelligence
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <span class="eyebrow">
+            OVERVIEW
+        </span>
+
+        <h1>
+            Pricing Intelligence Dashboard
+        </h1>
+
+        <p>
+            Monitor competitor pricing, historical movements,
+            and merchant behavior.
+        </p>
+    </div>
+
+</div>
+
+
+<!-- KPI CARDS -->
+
+<section class="kpi-grid">
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            TOTAL PRODUCTS
+        </span>
+
+        <strong class="kpi-value">
+            {{ total_products }}
+        </strong>
+
+        <span class="kpi-description">
+            Products analyzed
+        </span>
+
+    </div>
+
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            MERCHANTS
+        </span>
+
+        <strong class="kpi-value">
+            {{ total_merchants }}
+        </strong>
+
+        <span class="kpi-description">
+            Competitors tracked
+        </span>
+
+    </div>
+
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            OBSERVATIONS
+        </span>
+
+        <strong class="kpi-value">
+            {{ total_observations }}
+        </strong>
+
+        <span class="kpi-description">
+            Historical price records
+        </span>
+
+    </div>
+
+
+    <div class="kpi-card">
+
+        <span class="kpi-label">
+            PRICE CHANGES
+        </span>
+
+        <strong class="kpi-value">
+            {{ total_price_changes }}
+        </strong>
+
+        <span class="kpi-description">
+            Detected price movements
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- ANALYTICS -->
+
+<section class="dashboard-grid">
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span class="panel-eyebrow">
+                    COMPETITIVE LANDSCAPE
+                </span>
+
+                <h2>
+                    Competitor Pricing
+                </h2>
+            </div>
+
+        </div>
+
+        <div
+            id="competitor-chart"
+            class="chart-container"
+        ></div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span class="panel-eyebrow">
+                    PRICE MOVEMENT
+                </span>
+
+                <h2>
+                    Largest Changes
+                </h2>
+            </div>
+
+        </div>
+
+        <div
+            id="movement-chart"
+            class="chart-container"
+        ></div>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                MERCHANT ANALYTICS
+            </span>
+
+            <h2>
+                Price Change Frequency
+            </h2>
+        </div>
+
+        <a
+            href="{{ url_for('products') }}"
+            class="panel-action"
+        >
+            Explore Products →
+        </a>
+
+    </div>
+
+    <div
+        id="merchant-chart"
+        class="chart-container chart-large"
+    ></div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script
+    src="https://cdn.plot.ly/plotly-2.35.2.min.js"
+></script>
+
+<script
+    src="{{ url_for('static', filename='js/charts.js') }}"
+></script>
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            loadDashboardCharts();
+
+        }
+    );
+
+</script>
+
+{% endblock %}

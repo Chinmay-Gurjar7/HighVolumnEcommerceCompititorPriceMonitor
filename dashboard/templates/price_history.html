@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}
+Price History | Price Intelligence
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <span class="eyebrow">
+            HISTORICAL ANALYSIS
+        </span>
+
+        <h1>
+            Price History
+        </h1>
+
+        <p>
+            Inspect historical competitor price movements
+            for individual products.
+        </p>
+    </div>
+
+</div>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                PRODUCT SELECTION
+            </span>
+
+            <h2>
+                Select a Product
+            </h2>
+        </div>
+
+    </div>
+
+
+    <div class="history-controls">
+
+        <input
+            type="text"
+            id="product-search"
+            class="search-input"
+            placeholder="Search products..."
+            autocomplete="off"
+        >
+
+        <select
+            id="product-selector"
+            class="filter-select"
+        >
+            <option value="">
+                Loading products...
+            </option>
+        </select>
+
+    </div>
+
+</section>
+
+
+<section
+    class="panel"
+    id="history-summary-panel"
+    style="display: none;"
+>
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                SELECTED PRODUCT
+            </span>
+
+            <h2 id="history-product-name">
+                —
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="kpi-grid history-kpi-grid">
+
+        <div class="kpi-card">
+
+            <span class="kpi-label">
+                OBSERVATIONS
+            </span>
+
+            <strong
+                class="kpi-value"
+                id="history-observations"
+            >
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="kpi-card">
+
+            <span class="kpi-label">
+                PRICE CHANGES
+            </span>
+
+            <strong
+                class="kpi-value"
+                id="history-changes"
+            >
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="kpi-card">
+
+            <span class="kpi-label">
+                INCREASES
+            </span>
+
+            <strong
+                class="kpi-value"
+                id="history-increases"
+            >
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="kpi-card">
+
+            <span class="kpi-label">
+                DECREASES
+            </span>
+
+            <strong
+                class="kpi-value"
+                id="history-decreases"
+            >
+                —
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="panel-eyebrow">
+                HISTORICAL OBSERVATIONS
+            </span>
+
+            <h2>
+                Price Movements
+            </h2>
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table
+            class="data-table"
+            id="price-history-table"
+        >
+
+            <thead>
+
+                <tr>
+                    <th>Merchant</th>
+                    <th>Observed</th>
+                    <th>Previous Price</th>
+                    <th>Current Price</th>
+                    <th>Change</th>
+                    <th>Change %</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody id="price-history-body">
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="table-loading"
+                    >
+                        Select a product to view price history.
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadPriceHistoryPage();
+
+    }
+);
+
+</script>
+
+{% endblock %}
