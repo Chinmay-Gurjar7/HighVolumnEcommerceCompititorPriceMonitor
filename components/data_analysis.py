@@ -264,13 +264,13 @@ class DataAnalysis:
                     summary
                     .sort_values(
                         [
-                            "price_changes",
-                            "price_change_rate",
+                            "price_spread",
+                            "competitor_count",
                         ],
                         ascending=[False, False]
                     )
                     .reset_index(drop=True)
-                )
+                    )
 
                 logger.info(
                     "Competitor price summary analysis "
