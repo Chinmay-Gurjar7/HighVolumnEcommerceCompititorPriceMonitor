@@ -701,3 +701,228 @@ body {
     text-align: center;
     color: var(--text-muted) !important;
 }
+
+/* ==========================================
+   PRODUCT EXPLORER
+========================================== */
+
+.product-toolbar {
+    display: grid;
+    grid-template-columns: minmax(280px, 2fr) minmax(160px, 1fr) 180px;
+    gap: 12px;
+    padding: 18px 22px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+}
+
+.product-toolbar label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.product-toolbar input,
+.product-toolbar select {
+    width: 100%;
+    height: 38px;
+    padding: 0 11px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: #ffffff;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.product-toolbar input::placeholder {
+    color: var(--text-muted);
+}
+
+.product-toolbar input:focus,
+.product-toolbar select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+
+/* ==========================================
+   PRODUCT TABLE
+========================================== */
+
+.products-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+}
+
+.products-table thead th {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: #fafbfc;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.products-table tbody td {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.products-table tbody tr {
+    transition: background 0.12s ease;
+}
+
+.products-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.products-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ==========================================
+   PRODUCT NAME
+========================================== */
+
+.product-link {
+    display: inline-block;
+    max-width: 420px;
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.product-link:hover {
+    color: var(--accent);
+}
+
+
+/* ==========================================
+   PRODUCT METRICS
+========================================== */
+
+.price-value {
+    color: var(--text-primary);
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.price-low {
+    color: var(--success);
+    font-weight: 650;
+}
+
+.price-high {
+    color: var(--danger);
+    font-weight: 650;
+}
+
+.price-spread {
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.competitor-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    padding: 4px 7px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   PRODUCT PAGE
+========================================== */
+
+.product-count {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.product-count strong {
+    color: var(--text-primary);
+}
+
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.empty-state {
+    padding: 50px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.empty-state strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.empty-state span {
+    font-size: 12px;
+}
+
+
+/* ==========================================
+   RESPONSIVE PRODUCT TOOLBAR
+========================================== */
+
+@media (max-width: 900px) {
+
+    .product-toolbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .product-toolbar > :first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .product-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .product-toolbar > :first-child {
+        grid-column: auto;
+    }
+
+    .products-table {
+        min-width: 850px;
+    }
+}
