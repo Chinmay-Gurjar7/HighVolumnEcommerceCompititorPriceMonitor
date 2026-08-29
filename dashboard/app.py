@@ -567,7 +567,7 @@ def create_app() -> Flask:
                     }
                 ), 404
 
-            history = history.where(
+            history = history.astype(object).where(
                 history.notna(),
                 None
             )

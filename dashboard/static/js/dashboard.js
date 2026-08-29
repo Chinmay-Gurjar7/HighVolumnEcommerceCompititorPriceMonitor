@@ -596,10 +596,10 @@ function renderPriceHistory(
             function (record) {
 
                 const previousPrice =
+                    record.previous_price !== null &&
+                    record.previous_price !== undefined &&
                     Number.isFinite(
-                        Number(
-                            record.previous_price
-                        )
+                        Number(record.previous_price)
                     )
                         ? formatCurrency(
                             record.previous_price
@@ -616,6 +616,8 @@ function renderPriceHistory(
                         : "—";
 
                 const change =
+                    record.price_change !== null &&
+                    record.price_change !== undefined &&
                     Number.isFinite(
                         Number(record.price_change)
                     )
@@ -625,10 +627,10 @@ function renderPriceHistory(
                         : "—";
 
                 const percentage =
+                    record.price_change_percentage !== null &&
+                    record.price_change_percentage !== undefined &&
                     Number.isFinite(
-                        Number(
-                            record.price_change_percentage
-                        )
+                        Number(record.price_change_percentage)
                     )
                         ? formatPercentage(
                             record.price_change_percentage
